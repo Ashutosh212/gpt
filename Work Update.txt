@@ -1,0 +1,14 @@
+12-02-25
+
+- Tokenizer built
+- Stuck at the point where tokenizer fail to recognize special token and not able to convert them in id. I think the error due to tokenizer not trained with special token. 
+
+"Error : 
+  File "F:\GPT\dataset.py", line 20, in __init__
+    print(torch.tensor([tokenizer_src.token_to_id("sos")], dtype = torch.int64))
+TypeError: 'NoneType' object cannot be interpreted as an integer
+"
+https://huggingface.co/docs/tokenizers/python/latest/api/reference.html
+
+https://www.kaggle.com/code/lusfernandotorres/transformer-from-scratch-with-pytorch
+
