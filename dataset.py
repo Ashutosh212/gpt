@@ -49,8 +49,12 @@ class BilingualDataset(Dataset):
         # -1 accounts for only the <SOS> token, as the <EOS> token is part of the output sequence that the decoder generates.
 
         if enc_num_padding_token < 0 or dec_num_padding_token < 0 :
+            print("-"*50)
             print(src_text)
+            print(len(enc_input_tokens))
             print(tgt_text)
+            print(len(dec_input_tokens))
+            print("-"*50)
             raise ValueError('Sentence is too long')
         
         # Add SOS and EOS to the source text

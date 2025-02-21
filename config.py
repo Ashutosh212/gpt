@@ -2,16 +2,16 @@ from pathlib import Path
 
 def get_config():
     return {
-        "batch_size" : 2,
-        "num_epochs":2,
+        "batch_size" : 16,
+        "num_epochs":100,
         "lr": 10**-4,
         "seq_len" : 2705,
-        "d_model" : 32,
+        "d_model" : 520,
         "lang_src" : "english",
         "lang_tgt" : "hindi",
-        "datasource": 'opus_books',
+        "datasource": 'hin_eng',
         "model_folder" : "weights",
-        "model_filename" : "tmodel_",
+        "model_basename": "tmodel_",
         "preload" : None,
         "tokenizer_file" : "tokenizer_{0}.json",
         "experiment_name" : "runs/model"

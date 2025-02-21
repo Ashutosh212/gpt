@@ -46,25 +46,6 @@ def get_all_sentences(ds, lang):
             continue
         yield item[lang]
 
-
-# def get_or_build_tokenizer(config, ds, lang):
-#     tokenizer_path = Path(config['tokenizer_file'].format(lang))
-#     print(f"tokenizer path : {tokenizer_path}")
-#     if not Path.exists(tokenizer_path):
-#         tokenizer = Tokenizer(WordLevel(unk_token='unk'))
-#         tokenizer.pre_tokenizer = Whitespace()
-#         trainer = WordLevelTrainer(special_token = ["unk", "pad", "sos", "eos"], min_freequency = 2)
-
-#         sentences = list(get_all_sentences(ds, lang))
-#         tokenizer.train_from_iterator(sentences, trainer=trainer)
-#         tokenizer.save(str(tokenizer_path))
-    
-#     else:
-#         tokenizer = Tokenizer.from_file(str(tokenizer_path))
-
-#     return tokenizer
-
-
 def get_or_build_tokenizer(config, ds, lang):
     tokenizer_path = Path(config['tokenizer_file'].format(lang))
     print(f"tokenizer path : {tokenizer_path}")
@@ -97,15 +78,22 @@ def get_or_build_tokenizer(config, ds, lang):
 
 
 def get_ds(config):
-    ds_raw = load_dataset("csv" , data_files = "hindi_english_parallel.csv")
+    ds_raw = load_dataset("csv" , data_files = "hin_eng_small.csv")
 
     ds_raw = ds_raw['train']
+  
     # dataset = [{"english": example["english"], "hindi": example["hindi"]} for example in ds_raw]
+    # print({"english": ds_raw["english"][10], "hindi": ds_raw["hindi"][10]})
     dataset = [
-        {"english": example["english"], "hindi": example["hindi"]}
-        for example in ds_raw
-        if example["english"] and example["hindi"]  # Ensure neither value is None or empty
+        {"english": ds_raw["english"][i], "hindi": ds_raw["hindi"][i]}
+        for i in range(len(ds_raw))
     ]
+
+    # dataset = [
+    #     {"english": example["english"], "hindi": example["hindi"]}
+    #     for example in ds_raw[:200]
+    #     if example["english"] and example["hindi"]  # Ensure neither value is None or empty
+    # ]
     for example in ds_raw:
         hindi_sentence = example['hindi']  
         english_sentence = example['english']  
@@ -120,12 +108,6 @@ def get_ds(config):
     tokenizer_tgt = get_or_build_tokenizer(config, dataset, config["lang_tgt"])
 
     # Splitting train-val
-
-    train_ds_Size = int(0.9 * len(ds_raw))
-    val_ds_Size = len(ds_raw) - train_ds_Size
-    train_ds_raw, val_ds_raw = random_split(ds_raw, [train_ds_Size, val_ds_Size])
-
-
 
     # max_len_src = 0
     # max_len_tgt = 0
@@ -144,6 +126,12 @@ def get_ds(config):
 
     # print(f"Max length of source sentence: {max_len_src}")
     # print(f"Max length of target sentence: {max_len_tgt}")
+    # mk
+
+
+    train_ds_Size = int(0.9 * len(dataset))
+    val_ds_Size = len(dataset) - train_ds_Size
+    train_ds_raw, val_ds_raw = random_split(dataset, [train_ds_Size, val_ds_Size])
 
     train_ds = BilingualDataset(train_ds_raw, tokenizer_src, tokenizer_tgt, config['lang_src'], config['lang_tgt'], config['seq_len'])
     val_ds = BilingualDataset(val_ds_raw, tokenizer_src, tokenizer_tgt, config['lang_src'], config['lang_tgt'], config['seq_len'])
